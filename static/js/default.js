@@ -1,4 +1,19 @@
 $(function() {
+    alert("okay");
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+     var first = getUrlVars()["id"];
+     var second = getUrlVars()["page"];
+
+     alert(first);
+     alert(second);
+
+    }
 
     $('#btnSignUp').click(function() {
         $.ajax({
