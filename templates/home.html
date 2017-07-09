@@ -24,28 +24,98 @@
                   <li class="active"><a href="showBucketListView">My Bucket List</a></li>
                   <li><a href="showBucketListEdit">My Bucket List Management</a></li>
               </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="showSignIn">Sign In</a></li>
-              <li><a href="showSignUp">Sign Up</a></li>
-            </ul>
+              <div class="navbar-right">
+                  <ul class="nav navbar-nav" id="nav-not-logged-in">
+                    <li><a href="showSignIn">Sign In</a></li>
+                    <li><a href="showSignUp">Sign Up</a></li>
+                  </ul>
+                  <ul class="nav navbar-nav" id="nav-logged-in">
+                      <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                              <span class="glyphicon glyphicon-user"></span>
+                              <span class="bl_user">User</span>
+                              <span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu">
+                              <li><a href="#"><span class="glyphicon glyphicon-log-out"> Sign Out</span></a></li>
+                              <li><a href="#"><span class="glyphicon glyphicon-cog"> Setting</span></a></li>
+
+                          </ul>
+
+                      </li>
+                  </ul>
+
+              </div>
+
           </div>
         </nav>
     </header>
     <div id="main" class="container">
-      <div class="col-md-8 col-md-offset-2">
-        <div class="jumbotron">
-          <div class="clear-fix">
-              <img src="/static/img/logo.png">
-              <div class="pull-right">
-                <h1 class="">Bucket <small>List</small></h1>
-                <button class="btn btn-success btn-block">Sign Up Today!</button>
+        <h1>My Bucket List</h1>
+        <div>
+          <div class="list-group">
+            <a aria-controls="bl1" aria-expanded="false" class="list-group-item " data-toggle="collapse" href="#bl1">Sports</a>
+            <div class="collapse" id="bl1">
+              <div class="well">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Activity</th>
+                      
+                      <th>Status</th>
+                      <th>Period</th>
+                      <th>Actions</th>
+                      
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Mountain Climbing</td>
+                      <td>Done</td>
+                      <td>31 Aug 2017</td>
+                      <td>
+                        <a class="btn btn-default"><span class="glyphicon glyphicon-check"></span>Done</a>
+                        <a class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+                        <a class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Mountain Climbing</td>
+                      <td>Done</td>
+                      <td>31 Aug 2017</td>
+                      <td>
+                        <a class="btn btn-default"><span class="glyphicon glyphicon-check"></span>Done</a>
+                        <a class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+                        <a class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+            </div>
+            <a aria-controls="bl2" aria-expanded="false" class="list-group-item " data-toggle="collapse" href="#bl2">Sports</a>
+            <div class="collapse" id="bl2">
+              <div class="well">
+                Item 1
+              </div>
+            </div>
+            <a aria-controls="bl3" aria-expanded="false" class="list-group-item " data-toggle="collapse" href="#bl3">Sports</a>
+            <div class="collapse" id="bl3">
+              <div class="well">
+                Item 1
+              </div>
+            </div>
 
+            <a class="list-group-item active">Sports</a>
+            <a class="list-group-item ">Adventure</a>
+            <a class="list-group-item ">Events</a>
+            <a class="list-group-item ">Achievement</a>
+            <a class="list-group-item ">Travel</a>
+            <a class="list-group-item ">Food &amp; Drinks</a>           
           </div>
+          
         </div>
-      </div>
-
-
     </div>
     <footer>
 

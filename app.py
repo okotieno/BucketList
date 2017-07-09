@@ -42,13 +42,25 @@ def showSignUp():
 
 @app.route('/showHome')
 def showHome():
-    return render_template('home.html?id = 1&page=200 ')
+    return render_template('home.html')
 
 @app.route('/showSignIn')
 def showSignIn():
     return render_template('signin.html')
 
 # Set up the check for Sign In
+
+@app.route('/getsession')
+def getsession():
+    try:
+        if 'bl_user' in session:
+            return json.dumps({'loggedin':1,'user': session['bl_user']})
+        else:
+            return json.dumps({'loggedin':0})
+    except Exception as e:
+        return json.dumps({'error': str(e)})
+
+
 @app.route('/signIn', methods=['POST', 'GET'])
 def signIn():
     try:
@@ -65,8 +77,12 @@ def signIn():
             cursor.callproc('sp_loginUser', (_email, _hashed_password))
 
             data = cursor.fetchall()
-            session['bl_user'] = data
-            return json.dumps({'login': str(data)})
+            session['bl_user'] = data[0]
+            if data[0][0]=='Invalid username or password !':
+                return json.dumps({'loggedin': 0, 'user': data[0]})
+            else:
+                return json.dumps({'loggedin': 1, 'user': data[0]})
+
         else:
             return json.dumps({'html': '<span>Enter the required fields</span>'})
 
@@ -81,7 +97,7 @@ def signIn():
         except Exception as e:
             return json.dumps({'error': str(e)})
 
-@app.route('/signUp', methods=['POST', 'GET'])
+@app.route('/signUp', methods = ['POST', 'GET'])
 def signUp():
     try:
         conn = mysql.connect()
@@ -121,4 +137,4 @@ def signUp():
 
 
 if __name__ == "__main__":
-    app.run(port=5002)
+    app.run(port=5001)

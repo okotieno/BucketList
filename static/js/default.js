@@ -1,19 +1,26 @@
 $(function() {
-    alert("okay");
-    function getUrlVars() {
-        var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-            vars[key] = value;
-        });
-        return vars;
-    }
-     var first = getUrlVars()["id"];
-     var second = getUrlVars()["page"];
+     $.ajax({
+            url: '/getsession',
+            //data: $('form').serialize(),
+            //type: 'POST',
+            success: function(response) {
 
-     alert(first);
-     alert(second);
+                response = $.parseJSON(response);
+                if (response.loggedin==1){
+                    $("#nav-not-logged-in").addClass("hidden");
+                    $(".bl_user").html(response.user[1]);
+                }
 
-    }
+                else{
+                    $("#nav-logged-in").addClass("hidden");
+
+                }
+
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
 
     $('#btnSignUp').click(function() {
         $.ajax({
@@ -29,13 +36,20 @@ $(function() {
         });
     });
     $('#btnSignIn').click(function() {
-        alert("working");
         $.ajax({
             url: '/signIn',
             data: $('form').serialize(),
             type: 'POST',
             success: function(response) {
-                alert(response);
+                response = $.parseJSON(response);
+                if(response.loggedin==0){
+                    alert("Invalid Username or Password !");
+                }
+                else{
+                    $("#nav-not-logged-in").addClass("hidden");
+                    $("#nav-logged-in").removeClass("hidden");
+                }
+
             },
             error: function(error) {
                 console.log(error);
