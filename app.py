@@ -5,15 +5,39 @@
     dreams and goals
 """
 
+
+class BucketList:
+    def __init__(self, name=None):
+        self.name = name
+
+    def add_category(self):
+        self.name = "Set to database"
+
+    def edit_category(self):
+        self.name = "Set to database"
+
+    def delete_category(self):
+        self.name = "Set to database"
+
+    def add_activity(self):
+        self.name = "Set to database"
+
+    def delete_activity(self):
+        self.name = "Set to database"
+
+    def edit_activity(self):
+        self.name = "Set to database"
+
+
 # session will be used to set a session for a user
 # json will be used to return data to the browser
 
 from flask import Flask, render_template, json, request, session
 
-#Library for using MySQL
+# Library for using MySQL
 from flask.ext.mysql import MySQL
 
-#We need this for hashing our password before saving it in the database
+# We need this for hashing our password before saving it in the database
 import hashlib
 import os
 
@@ -31,6 +55,7 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 mysql.init_app(app)
 
+
 @app.route('/')
 def main():
     return render_template('index.html')
@@ -40,13 +65,16 @@ def main():
 def showSignUp():
     return render_template('signup.html')
 
+
 @app.route('/showHome')
 def showHome():
     return render_template('home.html')
 
+
 @app.route('/showSignIn')
 def showSignIn():
     return render_template('signin.html')
+
 
 # Set up the check for Sign In
 
@@ -54,15 +82,16 @@ def showSignIn():
 def getsession():
     try:
         if 'bl_user' in session:
-            return json.dumps({'loggedin':1,'user': session['bl_user']})
+            return json.dumps({'loggedin': 1, 'user': session['bl_user']})
         else:
-            return json.dumps({'loggedin':0})
+            return json.dumps({'loggedin': 0})
     except Exception as e:
         return json.dumps({'error': str(e)})
 
 
 @app.route('/signIn', methods=['POST', 'GET'])
 def signIn():
+    global conn, cursor
     try:
         _email = request.form['inputEmail']
         _password = request.form['inputPassword']
@@ -72,13 +101,13 @@ def signIn():
             conn = mysql.connect()
             cursor = conn.cursor()
 
-            #Hash the password before saving it to the database
+            # Hash the password before saving it to the database
             _hashed_password = hashlib.md5(_password.encode('utf-8')).hexdigest()
             cursor.callproc('sp_loginUser', (_email, _hashed_password))
 
             data = cursor.fetchall()
             session['bl_user'] = data[0]
-            if data[0][0]=='Invalid username or password !':
+            if data[0][0] == 'Invalid username or password !':
                 return json.dumps({'loggedin': 0, 'user': data[0]})
             else:
                 return json.dumps({'loggedin': 1, 'user': data[0]})
@@ -97,8 +126,10 @@ def signIn():
         except Exception as e:
             return json.dumps({'error': str(e)})
 
-@app.route('/signUp', methods = ['POST', 'GET'])
+
+@app.route('/signUp', methods=['POST', 'GET'])
 def signUp():
+    global conn, cursor
     try:
         conn = mysql.connect()
         cursor = conn.cursor()
