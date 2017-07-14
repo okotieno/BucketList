@@ -55,6 +55,11 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 mysql.init_app(app)
 
+@app.route('/showBucketListEdit')
+def showBucketListEdit():
+    return render_template('bucketListManagement.html')
+
+
 
 @app.route('/')
 def main():
@@ -66,6 +71,7 @@ def showSignUp():
     return render_template('signup.html')
 
 
+@app.route('/showBucketListView')
 @app.route('/showHome')
 def showHome():
     return render_template('home.html')
@@ -81,13 +87,25 @@ def showSignIn():
 @app.route('/getsession')
 def getsession():
     try:
-        if 'bl_user' in session:
+        if session['bl_user'] == None:
+            return json.dumps({'loggedin': 0})
+        elif 'bl_user' in session:
             return json.dumps({'loggedin': 1, 'user': session['bl_user']})
         else:
             return json.dumps({'loggedin': 0})
     except Exception as e:
         return json.dumps({'error': str(e)})
 
+
+@app.route('/addNewCategory', methods=['POST', 'GET'])
+def addNewCategory():
+    return json.dumps({'success': 0, 'user': "Not Added"})
+
+
+@app.route('/logOut')
+def logOut():
+    session['bl_user'] = None
+    return showHome()
 
 @app.route('/signIn', methods=['POST', 'GET'])
 def signIn():
@@ -106,12 +124,11 @@ def signIn():
             cursor.callproc('sp_loginUser', (_email, _hashed_password))
 
             data = cursor.fetchall()
-            session['bl_user'] = data[0]
             if data[0][0] == 'Invalid username or password !':
                 return json.dumps({'loggedin': 0, 'user': data[0]})
             else:
+                session['bl_user'] = data[0]
                 return json.dumps({'loggedin': 1, 'user': data[0]})
-
         else:
             return json.dumps({'html': '<span>Enter the required fields</span>'})
 

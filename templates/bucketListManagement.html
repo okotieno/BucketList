@@ -21,8 +21,8 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="Menu">
               <ul class="nav navbar-nav navbar-pills">
-                  <li class="active"><a href="showBucketListView">My Bucket List</a></li>
-                  <li><a href="showBucketListEdit">My Bucket List Management</a></li>
+                  <li><a href="showBucketListView">My Bucket List</a></li>
+                  <li class="active"><a href="showBucketListEdit">My Bucket List Management</a></li>
               </ul>
               <div class="navbar-right">
                   <ul class="nav navbar-nav" id="nav-not-logged-in">
@@ -37,7 +37,7 @@
                               <span class="caret"></span>
                           </a>
                           <ul class="dropdown-menu">
-                              <li class="log-out"><a href="#"><span class="glyphicon glyphicon-log-out"> Sign Out</span></a></li>
+                              <li><a href="#"><span class="glyphicon glyphicon-log-out"> Sign Out</span></a></li>
                               <li><a href="#"><span class="glyphicon glyphicon-cog"> Setting</span></a></li>
 
                           </ul>
@@ -106,13 +106,15 @@
                 Item 1
               </div>
             </div>
-
-            <a class="list-group-item active">Sports</a>
-            <a class="list-group-item ">Adventure</a>
-            <a class="list-group-item ">Events</a>
-            <a class="list-group-item ">Achievement</a>
-            <a class="list-group-item ">Travel</a>
-            <a class="list-group-item ">Food &amp; Drinks</a>           
+              <a aria-controls="bl_new" data-toggle="collapse" aria-expanded="false" href ="#bl_new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add new category </a>
+                <div class="collapse" id="bl_new">
+                    <div class="well">
+                        <form action="" class="form-inline">
+                            <input class="form-control" type="text" name="bl_new_name" id="">
+                            <input type="submit" class="btn btn-success" value="Add Category">
+                        </form>
+                    </div>
+                </div>
           </div>
           
         </div>

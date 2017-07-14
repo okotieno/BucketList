@@ -1,18 +1,25 @@
 $(function() {
-     $.ajax({
+    function getsession() {
+         $.ajax({
             url: '/getsession',
             //data: $('form').serialize(),
             //type: 'POST',
             success: function(response) {
-
                 response = $.parseJSON(response);
                 if (response.loggedin==1){
                     $("#nav-not-logged-in").addClass("hidden");
                     $(".bl_user").html(response.user[1]);
+                    $(".form-signin").addClass("hidden");
+                    $(".log-in-welcome").removeClass("hidden");
+
                 }
 
                 else{
                     $("#nav-logged-in").addClass("hidden");
+                    var pathname = window.location.pathname;
+                    if(pathname != "/showSignIn" && pathname != "/showSignUp" ){
+                        window.location.assign("/");
+                    }
 
                 }
 
@@ -21,7 +28,58 @@ $(function() {
                 console.log(error);
             }
         });
-
+    }
+    getsession();
+//      $.ajax({
+//             url: '/getsession',
+//             //data: $('form').serialize(),
+//             //type: 'POST',
+//             success: function(response) {
+//
+//                 response = $.parseJSON(response);
+//                 if (response.loggedin==1){
+//                     $("#nav-not-logged-in").addClass("hidden");
+//                     $(".bl_user").html(response.user[1]);
+//                 }
+//
+//                 else{
+//                     $("#nav-logged-in").addClass("hidden");
+//
+//                 }
+//
+//             },
+//             error: function(error) {
+//                 console.log(error);
+//             }
+//         });
+    $('#bl_new form').submit(function(form) {
+        form.preventDefault();
+        $.ajax({
+            url: '/addNewCategory',
+            data: $('form').serialize(),
+            type: 'POST',
+            success: function(response) {
+                alert(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    $('.log-out').click(function() {
+        $.ajax({
+            url: '/logOut',
+            //data: $('form').serialize(),
+            //type: 'POST',
+            success: function(response) {
+                alert("Successfuly Logged Out!");
+                window.location.assign("/");
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
     $('#btnSignUp').click(function() {
         $.ajax({
             url: '/signUp',
@@ -41,13 +99,19 @@ $(function() {
             data: $('form').serialize(),
             type: 'POST',
             success: function(response) {
+                msg = response;
                 response = $.parseJSON(response);
                 if(response.loggedin==0){
                     alert("Invalid Username or Password !");
                 }
+                else if(response.loggedin==1){
+                    window.location.assign("showHome");
+                }
                 else{
-                    $("#nav-not-logged-in").addClass("hidden");
-                    $("#nav-logged-in").removeClass("hidden");
+                    //$("#nav-not-logged-in").addClass("hidden");
+                    //$("#nav-logged-in").removeClass("hidden");
+                    //getsession();
+                    alert(msg);
                 }
 
             },
