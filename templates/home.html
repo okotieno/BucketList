@@ -53,8 +53,27 @@
     <div id="main" class="container">
         <h1>My Bucket List</h1>
         <div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a aria-controls="bl1" aria-expanded="false" class="btn" data-toggle="collapse" href="#bl10">
+                        qwertyuikjhgfddf
+                    </a>
+                    <button class="btn btn-success btn-sm"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+                    <button class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                    <div class="collapse" id="bl10">
+                        <div class="well">
+                            WEEEEEEEEEEEEEEE
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
           <div class="list-group">
-            <a aria-controls="bl1" aria-expanded="false" class="list-group-item " data-toggle="collapse" href="#bl1">Sports</a>
+            <a aria-controls="bl1" aria-expanded="false" class="list-group-item clearfix" data-toggle="collapse" href="#bl1">
+                Sports
+                <span class="glyphicon glyphicon-edit pull-right"></span>
+            </a>
             <div class="collapse" id="bl1">
               <div class="well">
                 <table class="table table-hover">
@@ -85,9 +104,9 @@
                       <td>Done</td>
                       <td>31 Aug 2017</td>
                       <td>
-                        <a class="btn btn-default"><span class="glyphicon glyphicon-check"></span>Done</a>
-                        <a class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-                        <a class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                        <a class="btn btn-default btn-sm"><span class="glyphicon glyphicon-check"></span>Done</a>
+                        <a class="btn btn-success btn-sm"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+                        <a class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span>Delete</a>
                       </td>
                     </tr>
                   </tbody>

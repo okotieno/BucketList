@@ -1,4 +1,70 @@
 $(function() {
+    function load_category(){
+        $.ajax({
+            url: '/allBlCategory',
+            //data: $('form').serialize(),
+            //type: 'POST',
+            success: function(response) {
+                
+                $(".bl_categories_edit").html("");
+
+                var raw_response = response;
+                response = $.parseJSON(response);
+
+                if(response.empty_data == 0){
+                    for (var _part in response.data){
+                        var attach = '<a class="list-group-item" aria-controls="bl' + response.data[_part][0]  +
+                            '" aria-expanded="false" ' +
+                            'data-toggle="collapse" href="#bl'+ response.data[_part][0] + '" >' +
+                            response.data[_part][1] + '</a>';
+
+                        attach = attach + '<div class="collapse" id="bl'+ response.data[_part][0] + '">' +
+                            '<div class="well"> well';
+                        attach = attach + '</div></div>'
+                        $(".bl_categories_edit").append(attach);
+                        //response.data[_part][1]
+
+                    }
+
+                }
+                else{
+                    alert(raw_response);
+                    $(".bl_categories_edit").append('<div class="alert alert-warning"> You have not set up any category yet!</div>');
+                }
+
+
+
+                // for (var _part in response.data){
+                //     var attach = '<a class="list-group-item" aria-controls="bl' + response.data[_part][0]  +
+                //         '" aria-expanded="false" ' +
+                //         'data-toggle="collapse" href="#bl'+ response.data[_part][0] + '" >' +
+                //         response.data[_part][1] + '</a>';
+                //
+                //     attach = attach + '<div class="collapse" id="bl'+ response.data[_part][0] + '">' +
+                //         '<div class="well"> well';
+                //     attach = attach + '</div></div>'
+                //     $(".bl_categories_edit").append(attach);
+                //     //response.data[_part][1]
+                //
+                // }
+                attach ='<a aria-controls="bl_new" data-toggle="collapse" aria-expanded="false" href ="#bl_new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add new category </a> ' +
+                    '<div class="collapse" id="bl_new"> ' +
+                    '<div class="well"> ' +
+                    '<form action="" class="form-inline">' +
+                    '<input class="form-control" type="text" name="bl_new_name" id="">' +
+                    '<input type="submit" class="btn btn-success" value="Add Category">' +
+                    '</form>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+
+                $(".bl_categories_edit").append(attach);                                                                                                                                                                                                                                                                                                                                                                                             },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
     function getsession() {
          $.ajax({
             url: '/getsession',
@@ -30,6 +96,7 @@ $(function() {
         });
     }
     getsession();
+    load_category();
 //      $.ajax({
 //             url: '/getsession',
 //             //data: $('form').serialize(),
@@ -52,14 +119,17 @@ $(function() {
 //                 console.log(error);
 //             }
 //         });
-    $('#bl_new form').submit(function(form) {
+    $(document).on('submit','#bl_new form',function(form) {
+        $this = $(this);
         form.preventDefault();
         $.ajax({
             url: '/addNewCategory',
-            data: $('form').serialize(),
+            data:  $this.serialize(),
             type: 'POST',
             success: function(response) {
+                load_category();
                 alert(response);
+
             },
             error: function(error) {
                 console.log(error);
@@ -72,7 +142,7 @@ $(function() {
             //data: $('form').serialize(),
             //type: 'POST',
             success: function(response) {
-                alert("Successfuly Logged Out!");
+                alert("Successfully Logged Out!");
                 window.location.assign("/");
             },
             error: function(error) {
