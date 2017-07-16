@@ -5,28 +5,75 @@
     dreams and goals
 """
 
-
 class BucketList:
-    def __init__(self, name=None):
-        self.name = name
+    def __init__(self, bl_username, bl_name=None):
+        self.bl_name = bl_name
+        self.conn = mysql.connect()
+        self.cursor = conn.cursor()
+        self.bl_category_user_id = None
+        self.username = bl_username[1]
+        self.get_user_id()
+
+    def get_user_id(self):
+
+        self.bl_category_user_id = 1
+        global conn, cursor
+        try:
+            conn = mysql.connect()
+            cursor = conn.cursor()
+
+            cursor.callproc('sp_user_id', [self.username])
+
+
+            #
+            data = cursor.fetchall()
+
+            #
+            self.bl_category_user_id = data[0][0]
+
+            return json.dumps({'user_id': self.bl_category_user_id})
+
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
+        finally:
+            cursor.close()
+            conn.close()
 
     def add_category(self):
-        self.name = "Set to database"
+
+        global conn, cursor
+        conn = mysql.connect()
+        cursor = conn.cursor()
+
+        #return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+
+        cursor.callproc('sp_Add_Bl_Category', (self.bl_name, self.bl_category_user_id))
+
+
+        data = cursor.fetchall()
+
+        if len(data) is 0:
+            conn.commit()
+            return json.dumps({'message': 'Category Created successfully !'})
+        else:
+            return json.dumps({'error': str(data[0])})
 
     def edit_category(self):
-        self.name = "Set to database"
+        self.bl_name  = "Set to database"
 
     def delete_category(self):
-        self.name = "Set to database"
+        self.bl_name = "Set to database"
 
     def add_activity(self):
-        self.name = "Set to database"
+        self.bl_name = "Set to database"
 
     def delete_activity(self):
-        self.name = "Set to database"
+        self.bl_name = "Set to database"
 
     def edit_activity(self):
-        self.name = "Set to database"
+        self.bl_name = "Set to database"
 
 
 # session will be used to set a session for a user
@@ -55,6 +102,11 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 mysql.init_app(app)
 
+@app.route('/showBucketListEdit')
+def showBucketListEdit():
+    return render_template('bucketListManagement.html')
+
+
 
 @app.route('/')
 def main():
@@ -66,6 +118,7 @@ def showSignUp():
     return render_template('signup.html')
 
 
+@app.route('/showBucketListView')
 @app.route('/showHome')
 def showHome():
     return render_template('home.html')
@@ -81,13 +134,90 @@ def showSignIn():
 @app.route('/getsession')
 def getsession():
     try:
-        if 'bl_user' in session:
+        if session['bl_user'] == None:
+            return json.dumps({'loggedin': 0})
+        elif 'bl_user' in session:
             return json.dumps({'loggedin': 1, 'user': session['bl_user']})
         else:
             return json.dumps({'loggedin': 0})
     except Exception as e:
         return json.dumps({'error': str(e)})
 
+
+@app.route('/allBlCategory')
+def allBlCategory():
+    global conn, cursor
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+
+        cursor.callproc('sp_all_bl_category', [session['bl_user'][0]])
+        data = cursor.fetchall()
+        if data[0][0] == 'Nothing Found !!':
+            return json.dumps({'empty_data':1,'data': data})
+
+        else:
+
+            return json.dumps({'empty_data':0,'data': data})
+
+    except Exception as e:
+        return json.dumps({'empty_data':1,'error': str(e)})
+
+@app.route('/addNewCategory', methods=['POST', 'GET'])
+def addNewCategory():
+
+    global conn, cursor
+    try:
+
+        _blNewName = request.form['bl_new_name']
+
+        if _blNewName:
+            myNewBucketList = BucketList(session['bl_user'], _blNewName)
+            return myNewBucketList.add_category()
+
+    except Exception as e:
+        return json.dumps({'error': str(e)})
+
+
+
+
+    # """
+    # global conn, cursor
+    # try:
+    #     _blNewName = request.form['bl_new_name']
+    #     if _blNewName:
+    #         conn = mysql.connect()
+    #         cursor = conn.cursor()
+    #         cursor.callproc('sp_Add_Bl_Category', (_blNewName,1))
+    #
+    #         data = cursor.fetchall()
+    #
+    #         if len(data) is 0:
+    #             conn.commit()
+    #             return json.dumps({'message': 'Category Created successfully !'})
+    #         else:
+    #             return json.dumps({'error': str(data[0])})
+    # except Exception as e:
+    #
+    #     return json.dumps({'error': str(e)})
+    #
+    # finally:
+    #     try:
+    #         cursor.close()
+    #         conn.close()
+    #     except Exception as e:
+    #         return json.dumps({'error': str(e)})
+    #         """
+
+
+
+    #sp_Add_Bl_Category
+
+
+@app.route('/logOut')
+def logOut():
+    session['bl_user'] = None
+    return json.dumps({'logged_in': '0'})
 
 @app.route('/signIn', methods=['POST', 'GET'])
 def signIn():
@@ -106,12 +236,11 @@ def signIn():
             cursor.callproc('sp_loginUser', (_email, _hashed_password))
 
             data = cursor.fetchall()
-            session['bl_user'] = data[0]
             if data[0][0] == 'Invalid username or password !':
                 return json.dumps({'loggedin': 0, 'user': data[0]})
             else:
+                session['bl_user'] = data[0]
                 return json.dumps({'loggedin': 1, 'user': data[0]})
-
         else:
             return json.dumps({'html': '<span>Enter the required fields</span>'})
 
@@ -168,4 +297,4 @@ def signUp():
 
 
 if __name__ == "__main__":
-    app.run(port=5001)
+    app.run(port=5006)

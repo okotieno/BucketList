@@ -21,8 +21,8 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="Menu">
               <ul class="nav navbar-nav navbar-pills">
-                  <li class="active"><a href="showBucketListView">My Bucket List</a></li>
-                  <li><a href="showBucketListEdit">My Bucket List Management</a></li>
+                  <li><a href="showBucketListView">My Bucket List</a></li>
+                  <li class="active"><a href="showBucketListEdit">My Bucket List Management</a></li>
               </ul>
               <div class="navbar-right">
                   <ul class="nav navbar-nav" id="nav-not-logged-in">
@@ -52,28 +52,11 @@
     </header>
     <div id="main" class="container">
         <h1>My Bucket List</h1>
-        <div>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <a aria-controls="bl1" aria-expanded="false" class="btn" data-toggle="collapse" href="#bl10">
-                        qwertyuikjhgfddf
-                    </a>
-                    <button class="btn btn-success btn-sm"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-                    <button class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span> Delete</button>
-                    <div class="collapse" id="bl10">
-                        <div class="well">
-                            WEEEEEEEEEEEEEEE
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div>
+        <div class = "bl_categories_edit">
+
+
           <div class="list-group">
-            <a aria-controls="bl1" aria-expanded="false" class="list-group-item clearfix" data-toggle="collapse" href="#bl1">
-                Sports
-                <span class="glyphicon glyphicon-edit pull-right"></span>
-            </a>
+            <a aria-controls="bl1" aria-expanded="false" class="list-group-item " data-toggle="collapse" href="#bl1">Sports</a>
             <div class="collapse" id="bl1">
               <div class="well">
                 <table class="table table-hover">
@@ -104,9 +87,9 @@
                       <td>Done</td>
                       <td>31 Aug 2017</td>
                       <td>
-                        <a class="btn btn-default btn-sm"><span class="glyphicon glyphicon-check"></span>Done</a>
-                        <a class="btn btn-success btn-sm"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-                        <a class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                        <a class="btn btn-default"><span class="glyphicon glyphicon-check"></span>Done</a>
+                        <a class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+                        <a class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</a>
                       </td>
                     </tr>
                   </tbody>
@@ -125,13 +108,15 @@
                 Item 1
               </div>
             </div>
-
-            <a class="list-group-item active">Sports</a>
-            <a class="list-group-item ">Adventure</a>
-            <a class="list-group-item ">Events</a>
-            <a class="list-group-item ">Achievement</a>
-            <a class="list-group-item ">Travel</a>
-            <a class="list-group-item ">Food &amp; Drinks</a>           
+              <a aria-controls="bl_new" data-toggle="collapse" aria-expanded="false" href ="#bl_new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add new category </a>
+                <div class="collapse" id="bl_new">
+                    <div class="well">
+                        <form action="" class="form-inline">
+                            <input class="form-control" type="text" name="bl_new_name" id="">
+                            <input type="submit" class="btn btn-success" value="Add Category">
+                        </form>
+                    </div>
+                </div>
           </div>
           
         </div>
