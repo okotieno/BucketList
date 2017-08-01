@@ -162,6 +162,9 @@ def allBlCategory():
 
     except Exception as e:
         return json.dumps({'empty_data':1,'error': str(e)})
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/addNewCategory', methods=['POST', 'GET'])
 def addNewCategory():
@@ -178,40 +181,9 @@ def addNewCategory():
     except Exception as e:
         return json.dumps({'error': str(e)})
 
-
-
-
-    # """
-    # global conn, cursor
-    # try:
-    #     _blNewName = request.form['bl_new_name']
-    #     if _blNewName:
-    #         conn = mysql.connect()
-    #         cursor = conn.cursor()
-    #         cursor.callproc('sp_Add_Bl_Category', (_blNewName,1))
-    #
-    #         data = cursor.fetchall()
-    #
-    #         if len(data) is 0:
-    #             conn.commit()
-    #             return json.dumps({'message': 'Category Created successfully !'})
-    #         else:
-    #             return json.dumps({'error': str(data[0])})
-    # except Exception as e:
-    #
-    #     return json.dumps({'error': str(e)})
-    #
-    # finally:
-    #     try:
-    #         cursor.close()
-    #         conn.close()
-    #     except Exception as e:
-    #         return json.dumps({'error': str(e)})
-    #         """
-
-
-
-    #sp_Add_Bl_Category
+    finally:
+        cursor.close()
+        conn.close()
 
 
 @app.route('/logOut')
@@ -289,11 +261,8 @@ def signUp():
         return json.dumps({'error': str(e)})
 
     finally:
-        try:
-            cursor.close()
-            conn.close()
-        except Exception as e:
-            return json.dumps({'error': str(e)})
+        cursor.close()
+        conn.close()
 
 
 if __name__ == "__main__":
