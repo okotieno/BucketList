@@ -1,4 +1,25 @@
 $(function() {
+    function load_activity($this){
+        var attach = "";
+        $.ajax({
+            url: '/allActivity',
+            data: { id:$this.attr("data-bl_id")},
+            type: 'POST',
+            success: function(response) {
+                //alert(response);
+                 attach = '<form action="" class="form-inline bl_activity">' +
+                         '<input class="form-control" type="hidden" name="bl_id"  value="'+ $this.attr("data-bl_id") +'">' +
+                        'Name:<input class="form-control" type="text" name="bl_activity_new_name" >' +
+                         'Date:<input disabled class="form-control" type="text" name="date" >' +
+                        '<input type="submit" class="btn btn-success" value="Add Activity">' +
+                        '</form>' ;
+                 $this.html(attach);
+            },
+            error: function(error) {
+                alert(error);
+            }
+        });
+    }
     function load_category(){
         $.ajax({
             url: '/allBlCategory',
@@ -14,12 +35,13 @@ $(function() {
                 if(response.empty_data == 0){
                     for (var _part in response.data){
                         var attach = '<a class="list-group-item" aria-controls="bl' + response.data[_part][0]  +
+                                '" data-bl_id="'+ response.data[_part][0] + '"' +
                             '" aria-expanded="false" ' +
                             'data-toggle="collapse" href="#bl'+ response.data[_part][0] + '" >' +
                             response.data[_part][1] + '</a>';
 
                         attach = attach + '<div class="collapse" id="bl'+ response.data[_part][0] + '">' +
-                            '<div class="well"> well';
+                            '<div data-bl_id="'+ response.data[_part][0] +'" class="well"> ';
                         attach = attach + '</div></div>'
                         $(".bl_categories_edit").append(attach);
                         //response.data[_part][1]
@@ -28,7 +50,6 @@ $(function() {
 
                 }
                 else{
-                    alert(raw_response);
                     $(".bl_categories_edit").append('<div class="alert alert-warning"> You have not set up any category yet!</div>');
                 }
 
@@ -59,7 +80,10 @@ $(function() {
                     '</div>' +
                     '</div>';
 
-                $(".bl_categories_edit").append(attach);                                                                                                                                                                                                                                                                                                                                                                                             },
+                $(".bl_categories_edit").append(attach);
+
+                var activity_li = '<td>' +
+                    '</td>';                                                                                                                                                                                                                                                                                                                                                                                         },
             error: function(error) {
                 console.log(error);
             }
@@ -97,41 +121,40 @@ $(function() {
     }
     getsession();
     load_category();
-//      $.ajax({
-//             url: '/getsession',
-//             //data: $('form').serialize(),
-//             //type: 'POST',
-//             success: function(response) {
-//
-//                 response = $.parseJSON(response);
-//                 if (response.loggedin==1){
-//                     $("#nav-not-logged-in").addClass("hidden");
-//                     $(".bl_user").html(response.user[1]);
-//                 }
-//
-//                 else{
-//                     $("#nav-logged-in").addClass("hidden");
-//
-//                 }
-//
-//             },
-//             error: function(error) {
-//                 console.log(error);
-//             }
-//         });
+   
+    $(document).on("click","a[data-bl_id]", function(){
+        var clicked_category = $(this).attr("data-bl_id");
+        load_activity($("div[data-bl_id='"+clicked_category+"']"));
+    });
+
+    $(document).on('submit','.bl_activity',function(form) {
+        $this = $(this)
+        form.preventDefault();
+        $.ajax({
+            url: '/addNewActivity',
+            data:  $this.serialize(),
+            type: 'POST',
+            success: function(response) {
+                alert(response);
+            },
+             error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+
+
     $(document).on('submit','#bl_new form',function(form) {
-        $this = $(this);
+        $this = $(this)
         form.preventDefault();
         $.ajax({
             url: '/addNewCategory',
             data:  $this.serialize(),
             type: 'POST',
             success: function(response) {
-                load_category();
-                alert(response);
 
             },
-            error: function(error) {
+             error: function(error) {
                 console.log(error);
             }
         });
@@ -156,7 +179,8 @@ $(function() {
             data: $('form').serialize(),
             type: 'POST',
             success: function(response) {
-                alert(response);
+                alert(response)
+                window.location.assign("showHome");
             },
             error: function(error) {
                 console.log(error);

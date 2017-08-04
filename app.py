@@ -42,23 +42,30 @@ class BucketList:
             conn.close()
 
     def add_category(self):
+        try:
+            global conn, cursor
+            conn = mysql.connect()
+            cursor = conn.cursor()
 
-        global conn, cursor
-        conn = mysql.connect()
-        cursor = conn.cursor()
+            #return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
 
-        #return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
-
-        cursor.callproc('sp_Add_Bl_Category', (self.bl_name, self.bl_category_user_id))
+            cursor.callproc('sp_Add_Bl_Category', (self.bl_name, self.bl_category_user_id))
 
 
-        data = cursor.fetchall()
+            data = cursor.fetchall()
 
-        if len(data) is 0:
-            conn.commit()
-            return json.dumps({'message': 'Category Created successfully !'})
-        else:
-            return json.dumps({'error': str(data[0])})
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message': 'Category Created successfully !'})
+            else:
+                return json.dumps({'error': str(data[0])})
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
+        finally:
+            cursor.close()
+            conn.close()
 
     def edit_category(self):
         self.bl_name  = "Set to database"
@@ -66,8 +73,30 @@ class BucketList:
     def delete_category(self):
         self.bl_name = "Set to database"
 
-    def add_activity(self):
-        self.bl_name = "Set to database"
+    def add_activity(self,bl_id, bl_activity_name):
+        try:
+            global conn, cursor
+            conn = mysql.connect()
+            cursor = conn.cursor()
+
+            # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+
+            cursor.callproc('sp_Add_Bl_Activity', ( bl_activity_name, bl_id))
+
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message': 'Activity Created successfully !'})
+            else:
+                return json.dumps({'error': str(data[0])})
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
+        finally:
+            cursor.close()
+            conn.close()
 
     def delete_activity(self):
         self.bl_name = "Set to database"
@@ -144,6 +173,12 @@ def getsession():
         return json.dumps({'error': str(e)})
 
 
+@app.route('/allActivity', methods=['POST', 'GET'])
+def allActivity():
+    _id = request.form['id']
+    return json.dumps({'empty_data': 1, 'data': _id})
+
+
 @app.route('/allBlCategory')
 def allBlCategory():
     global conn, cursor
@@ -185,6 +220,22 @@ def addNewCategory():
         cursor.close()
         conn.close()
 
+@app.route('/addNewActivity', methods=['POST', 'GET'])
+def addNewActivity():
+
+    _bl_id = request.form['bl_id']
+    _bl_activity_new_name = request.form['bl_activity_new_name']
+
+    if _bl_id and _bl_activity_new_name:
+        myNewBucketList = BucketList(session['bl_user'])
+        return myNewBucketList.add_activity(_bl_id,_bl_activity_new_name)
+
+    #_date = request.form['date']
+    #Date feature still pending
+
+
+
+    return "okay";
 
 @app.route('/logOut')
 def logOut():
@@ -248,8 +299,24 @@ def signUp():
             data = cursor.fetchall()
 
             if len(data) is 0:
+
+
+                #myNewBucketList = BucketList(session['bl_user'], _blNewName)
+
+                #new_user_bucket_list = BucketList([1,_email])
+                #user_id = new_user_bucket_list.get_user_id();
+
+                #user_id = 1;
+
+                #
                 conn.commit()
-                return json.dumps({'message': 'User created successfully !'})
+                user_id = 1
+                session['bl_user'] = [user_id, _email]
+                new_user_bucket_list = BucketList(session['bl_user'])
+                user_id = new_user_bucket_list.bl_category_user_id
+                session['bl_user'] = [user_id, _email]
+
+                return json.dumps({'message': 'User created successfully !','id':1})
             else:
                 return json.dumps({'error': str(data[0])})
         else:
@@ -261,8 +328,11 @@ def signUp():
         return json.dumps({'error': str(e)})
 
     finally:
-        cursor.close()
-        conn.close()
+        try:
+            cursor.close()
+            conn.close()
+        except Exception as e:
+            ""
 
 
 if __name__ == "__main__":
