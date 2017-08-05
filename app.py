@@ -5,6 +5,7 @@
     dreams and goals
 """
 
+
 class BucketList:
     def __init__(self, bl_username, bl_name=None):
         self.bl_name = bl_name
@@ -23,7 +24,6 @@ class BucketList:
             cursor = conn.cursor()
 
             cursor.callproc('sp_user_id', [self.username])
-
 
             #
             data = cursor.fetchall()
@@ -47,10 +47,9 @@ class BucketList:
             conn = mysql.connect()
             cursor = conn.cursor()
 
-            #return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+            # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
 
             cursor.callproc('sp_Add_Bl_Category', (self.bl_name, self.bl_category_user_id))
-
 
             data = cursor.fetchall()
 
@@ -68,12 +67,12 @@ class BucketList:
             conn.close()
 
     def edit_category(self):
-        self.bl_name  = "Set to database"
+        self.bl_name = "Set to database"
 
     def delete_category(self):
         self.bl_name = "Set to database"
 
-    def add_activity(self,bl_id, bl_activity_name):
+    def add_activity(self, bl_id, bl_activity_name):
         try:
             global conn, cursor
             conn = mysql.connect()
@@ -81,7 +80,7 @@ class BucketList:
 
             # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
 
-            cursor.callproc('sp_Add_Bl_Activity', ( bl_activity_name, bl_id))
+            cursor.callproc('sp_Add_Bl_Activity', (bl_activity_name, bl_id))
 
             data = cursor.fetchall()
 
@@ -98,8 +97,30 @@ class BucketList:
             cursor.close()
             conn.close()
 
-    def delete_activity(self):
-        self.bl_name = "Set to database"
+    def delete_activity(self, _activity_id):
+        try:
+            global conn, cursor
+            conn = mysql.connect()
+            cursor = conn.cursor()
+
+            # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+
+            cursor.callproc('sp_delete_Bl_activity', [_activity_id])
+
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message': 'Delete !'})
+            else:
+                return json.dumps({'error': str(data[0])})
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
+        finally:
+            cursor.close()
+            conn.close()
 
     def edit_activity(self):
         self.bl_name = "Set to database"
@@ -131,10 +152,10 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 mysql.init_app(app)
 
+
 @app.route('/showBucketListEdit')
 def showBucketListEdit():
     return render_template('bucketListManagement.html')
-
 
 
 @app.route('/')
@@ -175,8 +196,26 @@ def getsession():
 
 @app.route('/allActivity', methods=['POST', 'GET'])
 def allActivity():
-    _id = request.form['id']
-    return json.dumps({'empty_data': 1, 'data': _id})
+    try:
+        global conn, cursor
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        _id = request.form['id']
+
+        cursor.callproc('sp_all_bl_activity', [_id])
+        data = cursor.fetchall()
+        if data[0][0] == 'Nothing Found !!':
+            return json.dumps({'empty_data': 1, 'data': data})
+
+        else:
+
+            return json.dumps({'empty_data': 0, 'data': data})
+
+    except Exception as e:
+        return json.dumps({'empty_data': 1, 'error': str(e)})
+    finally:
+        cursor.close()
+        conn.close()
 
 
 @app.route('/allBlCategory')
@@ -189,24 +228,22 @@ def allBlCategory():
         cursor.callproc('sp_all_bl_category', [session['bl_user'][0]])
         data = cursor.fetchall()
         if data[0][0] == 'Nothing Found !!':
-            return json.dumps({'empty_data':1,'data': data})
+            return json.dumps({'empty_data': 1, 'data': data})
 
         else:
 
-            return json.dumps({'empty_data':0,'data': data})
+            return json.dumps({'empty_data': 0, 'data': data})
 
     except Exception as e:
-        return json.dumps({'empty_data':1,'error': str(e)})
+        return json.dumps({'empty_data': 1, 'error': str(e)})
     finally:
         cursor.close()
         conn.close()
 
+
 @app.route('/addNewCategory', methods=['POST', 'GET'])
 def addNewCategory():
-
-    global conn, cursor
     try:
-
         _blNewName = request.form['bl_new_name']
 
         if _blNewName:
@@ -216,31 +253,37 @@ def addNewCategory():
     except Exception as e:
         return json.dumps({'error': str(e)})
 
-    finally:
-        cursor.close()
-        conn.close()
 
 @app.route('/addNewActivity', methods=['POST', 'GET'])
 def addNewActivity():
-
     _bl_id = request.form['bl_id']
     _bl_activity_new_name = request.form['bl_activity_new_name']
 
     if _bl_id and _bl_activity_new_name:
         myNewBucketList = BucketList(session['bl_user'])
-        return myNewBucketList.add_activity(_bl_id,_bl_activity_new_name)
+        return myNewBucketList.add_activity(_bl_id, _bl_activity_new_name)
 
-    #_date = request.form['date']
-    #Date feature still pending
+    # _date = request.form['date']
+    # Date feature still pending
 
 
 
     return "okay";
 
+
+@app.route('/deleteActivity', methods=['POST', 'GET'])
+def deleteActivity():
+    _activity_id = request.form['activity_id']
+    if _activity_id:
+        myDeleteActivity = BucketList(session['bl_user'])
+        return myDeleteActivity.delete_activity(_activity_id)
+
+
 @app.route('/logOut')
 def logOut():
     session['bl_user'] = None
     return json.dumps({'logged_in': '0'})
+
 
 @app.route('/signIn', methods=['POST', 'GET'])
 def signIn():
@@ -300,13 +343,12 @@ def signUp():
 
             if len(data) is 0:
 
+                # myNewBucketList = BucketList(session['bl_user'], _blNewName)
 
-                #myNewBucketList = BucketList(session['bl_user'], _blNewName)
+                # new_user_bucket_list = BucketList([1,_email])
+                # user_id = new_user_bucket_list.get_user_id();
 
-                #new_user_bucket_list = BucketList([1,_email])
-                #user_id = new_user_bucket_list.get_user_id();
-
-                #user_id = 1;
+                # user_id = 1;
 
                 #
                 conn.commit()
@@ -316,7 +358,7 @@ def signUp():
                 user_id = new_user_bucket_list.bl_category_user_id
                 session['bl_user'] = [user_id, _email]
 
-                return json.dumps({'message': 'User created successfully !','id':1})
+                return json.dumps({'message': 'User created successfully !', 'id': 1})
             else:
                 return json.dumps({'error': str(data[0])})
         else:
