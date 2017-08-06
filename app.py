@@ -67,7 +67,27 @@ class BucketList:
             conn.close()
 
     def edit_category(self, id, name):
-        return "Functionality under construction"
+
+        try:
+            global conn, cursor
+            conn = mysql.connect()
+            cursor = conn.cursor()
+
+            # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+
+            cursor.callproc('sp_update_category', (id, name, self.bl_category_user_id))
+
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message': 'Category Updated successfully !'})
+            else:
+                return json.dumps({'error': str(data[0])})
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
 
     def delete_category(self, category_delete_id):
         try:
