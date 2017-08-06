@@ -69,8 +69,30 @@ class BucketList:
     def edit_category(self):
         self.bl_name = "Set to database"
 
-    def delete_category(self):
-        self.bl_name = "Set to database"
+    def delete_category(self, category_delete_id):
+        try:
+            global conn, cursor
+            conn = mysql.connect()
+            cursor = conn.cursor()
+
+            # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+
+            cursor.callproc('sp_delete_Category', [category_delete_id])
+
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message': 'Delete !'})
+            else:
+                return json.dumps({'error': str(data[0])})
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
+        finally:
+            cursor.close()
+            conn.close()
 
     def add_activity(self, bl_id, bl_activity_name):
         try:
@@ -318,6 +340,14 @@ def deleteActivity():
     if _activity_id:
         myDeleteActivity = BucketList(session['bl_user'])
         return myDeleteActivity.delete_activity(_activity_id)
+
+
+@app.route('/deleteCategory', methods=['POST', 'GET'])
+def deleteCategory():
+    _category_delete_id = request.form['category_delete_id']
+    if _category_delete_id:
+        myDeleteCategory = BucketList(session['bl_user'])
+        return myDeleteCategory.delete_category(_category_delete_id)
 
 
 @app.route('/logOut')

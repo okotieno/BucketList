@@ -82,11 +82,16 @@ $("document").ready(function () {
 
                 if (response.empty_data == 0) {
                     for (var _part in response.data) {
-                        var attach = '<a class="list-group-item" aria-controls="bl' + response.data[_part][0] +
+                        var attach = '<div class="row"><div class="col-md-10"><a class="list-group-item" aria-controls="bl' + response.data[_part][0] +
                             '" data-bl_id="' + response.data[_part][0] + '"' +
                             '" aria-expanded="false" ' +
                             'data-toggle="collapse" href="#bl' + response.data[_part][0] + '" >' +
-                            response.data[_part][1] + '</a>';
+                            response.data[_part][1] + '</a></div>';
+
+                        attach = attach + '<div class="col-md-2"> <div class="btn-group btn-group-justified" role="group">' +
+                            '<a class="btn btn-primary " data-category-edit="' + response.data[_part][0] + '" >Edit</a>' +
+                            '<a class="btn btn-danger" data-category-delete="' + response.data[_part][0] + '" >Delete</a>' +
+                            '</div></div></div>';
 
                         attach = attach + '<div class="collapse" id="bl' + response.data[_part][0] + '">' +
                             '<div data-bl_id="' + response.data[_part][0] + '" class="well"> ';
@@ -115,9 +120,9 @@ $("document").ready(function () {
                 //     //response.data[_part][1]
                 //
                 // }
-                attach = '<a aria-controls="bl_new" data-toggle="collapse" aria-expanded="false" href ="#bl_new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add new category </a> ' +
-                    '<div class="collapse" id="bl_new"> ' +
-                    '<div class="well"> ' +
+                attach = '<div class="col-md-12"> <a aria-controls="bl_new" data-toggle="collapse" aria-expanded="false" href ="#bl_new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add new category </a> </div>' +
+                    '<div class="collapse clearfix" id="bl_new"> ' +
+                    '<div class="well "> ' +
                     '<form action="" class="form-inline">' +
                     '<input class="form-control" type="text" name="bl_new_name" id="">' +
                     '<input type="submit" class="btn btn-success" value="Add Category">' +
@@ -253,4 +258,22 @@ $("document").ready(function () {
             }
         });
     });
+
+    $(document).on('click', "[data-category-delete]", function(){
+        var category_delete_id = $(this).attr("data-category-delete");
+        $.ajax({
+            url: '/deleteCategory',
+            data: {'category_delete_id': category_delete_id},
+            type: 'POST',
+            success: function (response) {
+
+                load_category();
+                alert(response);
+                //load_activity($this)
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    })
 });
