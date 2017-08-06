@@ -48,9 +48,11 @@ $("document").ready(function () {
                     attach = attach + '<div class="alert alert-warning">  No Activities found under this category! </div>';
                 }
 
-                attach = attach + '<a aria-controls="new_activity' + $this.attr("data-bl_id") + '" aria-expanded="false" ' +
+                attach = attach +
+                    '<a aria-controls="new_activity' + $this.attr("data-bl_id") + '" ' +
+                    'aria-expanded="false" ' +
                     'data-toggle="collapse" href="#new_activity' + $this.attr("data-bl_id") + '"' +
-                    ' class="btn btn-default"><span class="glyphicon glyphicon-plus"></span>Add Activity</a>';
+                    'class="btn btn-default"><span class="glyphicon glyphicon-plus"></span>Add Activity</a>';
                 attach = attach + '<div class="collapse" id="new_activity' + $this.attr("data-bl_id") + '"><form action="" class="form-inline bl_activity">' +
                     '<input class="form-control" type="hidden" name="bl_id"  value="' + $this.attr("data-bl_id") + '">' +
                     'Name: <input class="form-control" type="text" name="bl_activity_new_name" >' +
@@ -84,7 +86,7 @@ $("document").ready(function () {
                     for (var _part in response.data) {
                         var attach = '<div class="row"><div class="col-md-10"><a class="list-group-item" aria-controls="bl' + response.data[_part][0] +
                             '" data-bl_id="' + response.data[_part][0] + '"' +
-                            '" aria-expanded="false" ' +
+                            ' aria-expanded="false" ' +
                             'data-toggle="collapse" href="#bl' + response.data[_part][0] + '" >' +
                             response.data[_part][1] + '</a></div>';
 
@@ -99,6 +101,7 @@ $("document").ready(function () {
                         $(".bl_categories_edit").append(attach);
                         //response.data[_part][1]
 
+
                     }
 
                 }
@@ -106,20 +109,6 @@ $("document").ready(function () {
                     $(".bl_categories_edit").append('<div class="alert alert-warning"> You have not set up any category yet!</div>');
                 }
 
-
-                // for (var _part in response.data){
-                //     var attach = '<a class="list-group-item" aria-controls="bl' + response.data[_part][0]  +
-                //         '" aria-expanded="false" ' +
-                //         'data-toggle="collapse" href="#bl'+ response.data[_part][0] + '" >' +
-                //         response.data[_part][1] + '</a>';
-                //
-                //     attach = attach + '<div class="collapse" id="bl'+ response.data[_part][0] + '">' +
-                //         '<div class="well"> well';
-                //     attach = attach + '</div></div>'
-                //     $(".bl_categories_edit").append(attach);
-                //     //response.data[_part][1]
-                //
-                // }
                 attach = '<div class="col-md-12"> <a aria-controls="bl_new" data-toggle="collapse" aria-expanded="false" href ="#bl_new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add new category </a> </div>' +
                     '<div class="collapse clearfix" id="bl_new"> ' +
                     '<div class="well "> ' +
@@ -186,6 +175,25 @@ $("document").ready(function () {
                 load_activity($("div[data-bl_id='" + $("#activity-category_id").attr("value") + "']"));
                 alert(response);
                 $("#activity-edit-dialog").dialog('close');
+            },
+            error: function () {
+                alert("error while accessing link");
+            }
+        });
+
+    });
+
+    $(document).on("submit", "#category-edit-dialog form", function (form) {
+        var $this = $(this);
+        form.preventDefault();
+        $.ajax({
+            url: "/categoryUpdate",
+            data: $this.serializeArray(),
+            type: 'POST',
+            success: function (response) {
+                load_category();
+                alert(response);
+                $("#category-edit-dialog").dialog('close');
             },
             error: function () {
                 alert("error while accessing link");
@@ -276,4 +284,27 @@ $("document").ready(function () {
             }
         });
     })
+
+    $(document).on("click", "[data-category-edit]", function () {
+        var name = $(this).parents('.bl_categories_edit').children("div").children("div").children("a").text();
+        var edit_id = $(this).attr("data-category-edit");
+        $("#category-new-name").attr("value", name);
+        $("#category_id").attr("value", edit_id);
+
+        $("#category-edit-dialog").dialog({
+            title: "Activity Edit",
+            width: 430,
+            height: 360,
+            buttons: [
+                {
+                    text: "Cancel",
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }
+
+            ]
+        });
+
+    });
 });

@@ -66,8 +66,8 @@ class BucketList:
             cursor.close()
             conn.close()
 
-    def edit_category(self):
-        self.bl_name = "Set to database"
+    def edit_category(self, id, name):
+        return "Functionality under construction"
 
     def delete_category(self, category_delete_id):
         try:
@@ -294,6 +294,23 @@ def addNewCategory():
         if _blNewName:
             myNewBucketList = BucketList(session['bl_user'], _blNewName)
             return myNewBucketList.add_category()
+
+    except Exception as e:
+        return json.dumps({'error': str(e)})
+
+
+@app.route('/categoryUpdate', methods=['POST', 'GET'])
+def categoryUpdate():
+    try:
+
+        _id = request.form['category-id']
+        _name = request.form['new-name']
+
+        if _id and _name:
+            myUpdatedBucketList = BucketList(session['bl_user'])
+            return myUpdatedBucketList.edit_category(_id, _name)
+        else:
+            return json.dumps({'error': "All inputs not entered"})
 
     except Exception as e:
         return json.dumps({'error': str(e)})
