@@ -122,8 +122,31 @@ class BucketList:
             cursor.close()
             conn.close()
 
-    def edit_activity(self):
-        self.bl_name = "Set to database"
+    def edit_activity(self, id, name, date, category_id):
+
+        try:
+            global conn, cursor
+            conn = mysql.connect()
+            cursor = conn.cursor()
+
+            # return json.dumps({'id': self.bl_category_user_id,'name':self.bl_name})
+
+            cursor.callproc('sp_update_activity', (id, name, date, category_id))
+
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message': 'Activity Updated successfully !'})
+            else:
+                return json.dumps({'error': str(data[0])})
+        except Exception as e:
+
+            return json.dumps({'error': str(e)})
+
+        finally:
+            cursor.close()
+            conn.close()
 
 
 # session will be used to set a session for a user
@@ -249,6 +272,24 @@ def addNewCategory():
         if _blNewName:
             myNewBucketList = BucketList(session['bl_user'], _blNewName)
             return myNewBucketList.add_category()
+
+    except Exception as e:
+        return json.dumps({'error': str(e)})
+
+
+@app.route('/activityUpdate', methods=['POST', 'GET'])
+def activityUpdate():
+    try:
+        _date = request.form['activity-new-date']
+        _id = request.form['activity-id']
+        _name = request.form['new-name']
+        _category_id = request.form['category-id']
+
+        if _date and _id and _name:
+            myUpdatedBucketList = BucketList(session['bl_user'])
+            return myUpdatedBucketList.edit_activity(_id, _name, _date, _category_id)
+        else:
+            return json.dumps({'error': "All inputs not entered"})
 
     except Exception as e:
         return json.dumps({'error': str(e)})
